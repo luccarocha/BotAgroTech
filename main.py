@@ -14,12 +14,12 @@ class TelegramBot:
     update_id = None
     while True:
       atualizacao = self.obter_novas_mensagens(update_id)
-      mensagens = atualizacao["result"]
-      if mensagens:
+      mensagens = atualizacao["result"]      
+      if 'message' in mensagens:
         for mensagem in mensagens:
-          update_id = mensagem['update_id']
+          update_id = mensagem['update_id']          
           #mensagem = str(mensagem["message"]["text"])
-          chat_id = mensagem["message"]["from"]["id"]
+          chat_id = mensagem['message']['from']['id']
           primeira_mensagem = int (mensagem["message"]["message_id"]) == 1
           resposta = self.criar_resposta(mensagem,primeira_mensagem)
           self.responder(resposta,chat_id)
