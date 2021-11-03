@@ -121,7 +121,7 @@ class TelegramBot:
               elif mensagem.lower() in ('n','nao'):
                 return 'Ótimo! \n' + msg_menu
               else:
-                return 'Gostaria de voltar o menu? Digite "menu"!'
+                return 'Não entemos sua solicitação. \nGostaria de voltar ao menu? Digite "menu"!'
 
     # responder
     def responder(self, resposta, chat_id):
