@@ -19,14 +19,13 @@ f'{os.linesep * 2}B) Grupo Crespa: não formação de cabeça com folhas crespas
 f'{os.linesep * 2}C) Grupo Lisa ou Manteiga: formação de cabeça com folhas lisas (Brasil 303, Regina, Babá-de-verão, Elisa, ' \
 f'Karla e Lídia);' \
 f'{os.linesep * 2}D) Grupo Mimosa: não formação de cabeça com folhas com borda repicada (Salad Bowl);' \
-f'{os.linesep * 2}E) Grupo Romana: formação de cabeça alongada com folhas lisas, alongadas, duras e grossas (Romana Balão, Romaine).' \
-f'{os.linesep * 2}Finalizar consulta (S/N)?' 
+f'{os.linesep * 2}E) Grupo Romana: formação de cabeça alongada com folhas lisas, alongadas, duras e grossas (Romana Balão, Romaine).' 
     
 segunda_resposta = 'O cultivo em campo aberto ainda é predominante, apesar das perdas e limitações ainda' \
 'existentes no cultivo da alface durante o verão. O cultivo em condições de ambiente protegido, seja no solo' \
 'ou em sistema hidropônico, vem crescendo em função da redução dos riscos de perda, previsibilidade e constância' \
-'da produção, principalmente durante o período de verão.' \
-f'{os.linesep * 2}Finalizar consulta (S/N)?'
+'da produção, principalmente durante o período de verão.' 
+
 terceira_resposta = 'O cultivo em campo aberto ainda é predominante, apesar das perdas e limitações ainda existentes'  \
 'no cultivo da alface durante o verão. O cultivo em condições de ambiente protegido, seja no solo ou em sistema'  \
 'hidropônico, vem crescendo em função da redução dos riscos de perda, previsibilidade e constância da produção, ' \
@@ -36,15 +35,13 @@ f'{os.linesep * 2} Após a correção da fertilidade do solo, os canteiros são 
 'Quanto mais úmido o solo, pior será a sua drenagem, sendo este um indicativo de que os canteiros deverão ser ' \
 'construídos com altura mais elevada. Em regiões de solo arenoso e boa drenagem pode ser dispensado o preparo dos ' \
 'de canteiros, porém, espaços maiores entre plantas devem ser adotados para facilitar o trânsito, realização dos' \
-' tratos culturais e colheita.' \
-f'{os.linesep * 2}Finalizar consulta (S/N)?' 
+' tratos culturais e colheita.' 
 
 quarta_resposta = 'Em solos propícios ao cultivo da alface é recomendada a utilização de 200 g de composto orgânico' \
 'ou esterco de vaca curtido por planta. A aplicação poderá ser feita a lanço antes ou após o preparo dos canteiros' \
 'devendo-se, logo em seguida, incorporá-los ao solo. Em solos com baixa fertilidade e/ou baixo teor de matéria orgânica,' \
 'a adubação deverá ser localizada em pequenas “covas”, próximo às mudas. Para o plantio convencional, com a utilização' \
-'de adubos químicos, seguir as recomendações do Boletim 200 do IAC.' \
-f'{os.linesep * 2}Finalizar consulta (S/N)?'
+'de adubos químicos, seguir as recomendações do Boletim 200 do IAC.' 
 
 quinta_resposta = f'Em solos propícios ao cultivo da alface é recomendada a utilização de 200 g de composto orgânico ' \
 'ou esterco de vaca curtido por planta. A aplicação poderá ser feita a lanço antes ou após o preparo dos canteiros ' \
@@ -54,8 +51,7 @@ quinta_resposta = f'Em solos propícios ao cultivo da alface é recomendada a ut
 f'{os.linesep * 2} A irrigação é fundamental nesta fase, pois o excesso de água propiciará o ' \
 'estabelecimento de doenças causadas por fungos ou bactérias. As mudas estarão aptas para o transplante no campo ' \
 'quando desenvolverem seis folhas definitivas, o que ocorre de 20 a 30 dias após a semeadura, conforme a temperatura ' \
-'do período e dos tratos culturais empregados.' \
-f'{os.linesep * 2}Finalizar consulta (S/N)?'
+'do período e dos tratos culturais empregados.' 
 
 # iniciar o bot
 def iniciar():
@@ -179,18 +175,17 @@ def menu_options(update, context):
 
 def get_option(update, context):
     query = update.callback_query
-    print(query)
+    print(query.data)
     
-    if query.data == 1:
-        print("entrou aqui?")
-        context.bot.send_message(chat_id=update.effective_chat.id, text=primeira_resposta)
-    elif query.data == 2:
+    if query.data == '1':        
+        context.bot.send_message(chat_id=update.effective_chat.id, text=primeira_resposta)        
+    elif query.data == '2':
         context.bot.send_message(chat_id=update.effective_chat.id, text=segunda_resposta)
-    elif query.data == 3:
+    elif query.data == '3':
         context.bot.send_message(chat_id=update.effective_chat.id, text=terceira_resposta)
-    elif query.data == 4:
+    elif query.data == '4':
         context.bot.send_message(chat_id=update.effective_chat.id, text=quarta_resposta)
-    elif query.data == 5:
+    elif query.data == '5':
         context.bot.send_message(chat_id=update.effective_chat.id, text=quinta_resposta)           
     
 def main():
@@ -205,6 +200,7 @@ def main():
                 STATE2: [MessageHandler(Filters.text, inputFeedback2)]
             },
             fallbacks=[CommandHandler('cancel', cancel)])
+        
         updater.dispatcher.add_handler(conversation_handler)
         updater.dispatcher.add_handler(CommandHandler('menu', menu_options))
         updater.dispatcher.add_handler(CallbackQueryHandler(get_option))
