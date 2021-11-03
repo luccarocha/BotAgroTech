@@ -10,7 +10,7 @@ class TelegramBot:
         self.url_base = f'https://api.telegram.org/bot{token}/'#getUpdates?timeout=100'
   
   #Iniciar o bot
-  def Iniciar(self):
+  def iniciar(self):
     update_id = None
     while True:
       atualizacao = self.obter_novas_mensagens(update_id)
@@ -84,7 +84,9 @@ class TelegramBot:
     link_de_envio = f'{self.url_base}sendMessage?chat_id={chat_id}&text={resposta}'
     requests.get(link_de_envio)
 
-bot = TelegramBot()
-bot.Iniciar()
+
+if __name__ == '__main__':
+    bot = TelegramBot()
+    bot.iniciar()
 
   
