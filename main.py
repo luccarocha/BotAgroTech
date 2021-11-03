@@ -9,7 +9,7 @@ class TelegramBot:
         token = TOKEN
         self.url_base = f'https://api.telegram.org/bot{token}/'#getUpdates?timeout=100'
   
-    #Iniciar o bot
+    # iniciar o bot
     def iniciar(self):
       print("press CTRL + C to cancel.")
       update_id = None
@@ -26,16 +26,16 @@ class TelegramBot:
               resposta = self.criar_resposta(mensagem, primeira_mensagem)
               self.responder(resposta,chat_id)
 
-    #Obter as mensagens
+    # obter as mensagens
     def obter_novas_mensagens(self,update_id):
       link_requisicao = f'{self.url_base}getUpdates?timeout=100'
       if update_id:
-        #recebe sempre a ultima mensagem
+        # recebe sempre a ultima mensagem
         link_requisicao = f'{link_requisicao}&offset={update_id + 1}'
       resultado = requests.get(link_requisicao)
       return json.loads(resultado.content)
 
-    #Criar respostas
+    # criar respostas
     def criar_resposta(self,mensagem,primeira_mensagem):
       
       mensagem = mensagem['message']['text']
@@ -80,7 +80,7 @@ class TelegramBot:
       'devendo-se, logo em seguida, incorporá-los ao solo. Em solos com baixa fertilidade e/ou baixo teor de matéria orgânica,' \
       ' a adubação deverá ser localizada em pequenas “covas”, próximo às mudas. Para o plantio convencional, com a utilização' \
       'de adubos químicos, seguir as recomendações do Boletim 200 do IAC.' \
-      f'{os.linesep} A irrigação é fundamental nesta fase, pois o excesso de água propiciará o ' \
+      f'{os.linesep * 2} A irrigação é fundamental nesta fase, pois o excesso de água propiciará o ' \
       'estabelecimento de doenças causadas por fungos ou bactérias. As mudas estarão aptas para o transplante no campo ' \
       'quando desenvolverem seis folhas definitivas, o que ocorre de 20 a 30 dias após a semeadura, conforme a temperatura ' \
       'do período e dos tratos culturais empregados.' \
@@ -121,11 +121,11 @@ class TelegramBot:
           if mensagem.lower() in ('s','sim'):
             return 'Agradecemos seu contato, precisando é só chamar!'
           else:
-            return 'Gostaria de voltar o menu? Digite "menu"!'
+            return 'Não entendemos sua pergunta. Gostaria de voltar o menu? Digite "menu"!'
 
-    #Responder
+    # responder
     def responder(self,resposta,chat_id):
-      #enviar
+      # enviar
       link_de_envio = f'{self.url_base}sendMessage?chat_id={chat_id}&text={resposta}'
       requests.get(link_de_envio)
     
