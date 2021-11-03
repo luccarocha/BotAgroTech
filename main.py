@@ -2,11 +2,11 @@ import requests
 import time
 import json
 import os
-
+from settings import TOKEN
 
 class TelegramBot:
   def __init__(self):
-        token = '2055112037:AAGO3zJywyDtHtCM9yHCRBfsGyhX7b3kAcg'
+        token = TOKEN
         self.url_base = f'https://api.telegram.org/bot{token}/'#getUpdates?timeout=100'
   
   #Iniciar o bot
