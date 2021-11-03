@@ -27,7 +27,7 @@ class TelegramBot:
                 self.responder(resposta,chat_id)
 
     # obter as mensagens
-    def obter_novas_mensagens(self,update_id):
+    def obter_novas_mensagens(self, update_id):
         link_requisicao = f'{self.url_base}getUpdates?timeout=100'
         if update_id:
           # recebe sempre a ultima mensagem
@@ -36,7 +36,7 @@ class TelegramBot:
         return json.loads(resultado.content)
 
     # criar respostas
-    def criar_resposta(self,mensagem,primeira_mensagem):      
+    def criar_resposta(self, mensagem, primeira_mensagem):      
         mensagem = mensagem['message']['text']
         qt_respostas = ('1', '2', '3', '4', '5')
         
@@ -85,8 +85,7 @@ class TelegramBot:
         'do período e dos tratos culturais empregados.' \
         f'{os.linesep * 2}Finalizar consulta (S/N)?'
         
-        msg_menu = 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o culttivo de alface. ' \
-        'Digite o número da opção que deseja saber!'  \
+        msg_menu = 'Digite o número da opção que deseja saber!'  \
         f'{os.linesep * 2} 1 -  Quais são as cultivares de alface posso escolher?' \
         f'{os.linesep * 2} 2 - Quais são os tipos de sistemas de cultivo para alface? ' \
         f'{os.linesep * 2} 3 - Como devo fazer o preparo do solo para cultivar alface? ' \
@@ -99,31 +98,33 @@ class TelegramBot:
         if primeira_mensagem or mensagem == '/start':
             return msg_boas_vindas
         elif mensagem.lower() =='menu':
-            return msg_menu
+            return 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o culttivo de alface. \n' + msg_menu
         else:
-          if mensagem in qt_respostas:
-            if mensagem == '1':
-              return primeira_resposta     
+            if mensagem in qt_respostas:
+              if mensagem == '1':
+                return primeira_resposta     
 
-            if mensagem == '2':
-              return segunda_resposta
+              if mensagem == '2':
+                return segunda_resposta
 
-            if mensagem == '3':
-              return terceira_resposta
+              if mensagem == '3':
+                return terceira_resposta
 
-            if mensagem == '4':
-              return quarta_resposta
+              if mensagem == '4':
+                return quarta_resposta
 
-            if mensagem == '5':
-              return quinta_resposta
-          else:
-            if mensagem.lower() in ('s','sim'):
-              return 'Agradecemos seu contato, precisando é só chamar!'
+              if mensagem == '5':
+                return quinta_resposta
             else:
-              return 'Não entendemos sua pergunta. Gostaria de voltar o menu? Digite "menu"!'
+              if mensagem.lower() in ('s','sim'):
+                return 'Agradecemos seu contato, precisando é só chamar!'
+              elif mensagem.lower() in ('n','nao'):
+                return 'Ótimo! \n\n' + msg_menu
+              else:
+                return 'Gostaria de voltar o menu? Digite "menu"!'
 
     # responder
-    def responder(self,resposta,chat_id):
+    def responder(self, resposta, chat_id):
         # enviar
         link_de_envio = f'{self.url_base}sendMessage?chat_id={chat_id}&text={resposta}'
         requests.get(link_de_envio)
