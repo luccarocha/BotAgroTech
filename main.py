@@ -84,13 +84,23 @@ class TelegramBot:
       'estabelecimento de doenças causadas por fungos ou bactérias. As mudas estarão aptas para o transplante no campo ' \
       'quando desenvolverem seis folhas definitivas, o que ocorre de 20 a 30 dias após a semeadura, conforme a temperatura ' \
       'do período e dos tratos culturais empregados.' \
-      f'{os.linesep}Finalizar consulta (S/N)?'
+      f'{os.linesep * 2}Finalizar consulta (S/N)?'
+      
+      msg_menu = 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o culttivo de alface. ' \
+      'Digite o número da opção que deseja saber!'  \
+      f'{os.linesep * 2} 1 -  Quais são as cultivares de alface posso escolher?' \
+      f'{os.linesep * 2} 2 - Quais são os tipos de sistemas de cultivo para alface? ' \
+      f'{os.linesep * 2} 3 - Como devo fazer o preparo do solo para cultivar alface? ' \
+      f'{os.linesep * 2} 4 - Como devo fazer a adubação para a alface?'  \
+      f'{os.linesep * 2} 5 - Como devo fazer para obter mudas de alface?' \
+
+      msg_boas_vindas = 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o cultivo de alface.' \
+      'Gostaria de ir para o menu? Digite "Menu"!'
 
       if primeira_mensagem or mensagem == '/start':
-          return 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o cultivo de alface. Gostaria de ir para o menu? Digite "Menu"!'
+          return msg_boas_vindas
       elif mensagem.lower() =='menu':
-          return f'''Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o culttivo de alface. Digite o número da opção que deseja saber! {os.linesep} 1 -  Quais são as cultivares de alface posso escolher?{os.linesep}{os.linesep} 2 - Quais são os tipos de sistemas de cultivo para alface? {os.linesep}{os.linesep} 3 - Como devo fazer o preparo do solo para cultivar alface? 
-        {os.linesep}{os.linesep} 4 - Como devo fazer a adubação para a alface? {os.linesep}{os.linesep} 5 - Como devo fazer para obter mudas de alface?'''
+          return msg_menu
       else:
         if mensagem in qt_respostas:
           if mensagem == '1':
