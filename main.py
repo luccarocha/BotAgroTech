@@ -41,9 +41,7 @@ class TelegramBot:
     qt_respostas = ('1', '2', '3', '4', '5')
 
     if primeira_mensagem or mensagem.lower() == 'menu':
-          return f'''Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o culttivo de alface. Digite o número da opção que deseja saber! {os.linesep} 1 -  Quais são as cultivares de alface posso escolher?{os.linesep}{os.linesep} 2 - Quais são os tipos de sistemas de cultivo para alface? {os.linesep}{os.linesep} 3 - Como devo fazer o preparo do solo para cultivar alface? 
-          {os.linesep}{os.linesep} 4 - Como devo fazer a adubação para a alface? {os.linesep}{os.linesep} 5 - Como devo fazer para obter mudas de alface?'''
-    
+          return f''' Digite o numero da questão: {os.linesep}{os.linesep}1 -  Quais são as cultivares de alface posso escolher?{os.linesep}{os.linesep} 2 - Quais são os tipos de sistemas de cultivo para alface? {os.linesep}{os.linesep} 3 - Como devo fazer o preparo do solo para cultivar alface?{os.linesep}{os.linesep} 4 - Como devo fazer a adubação para a alface? {os.linesep}{os.linesep} 5 - Como devo fazer para obter mudas de alface?'''
     if mensagem in qt_respostas:
       if mensagem == '1':
         return f'''De acordo com as características das folhas, as cultivares de alface são classificadas em grupos:
@@ -77,8 +75,10 @@ class TelegramBot:
     else:
       if mensagem.lower() in ('s','sim'):
         return 'Agradecemos seu contato, precisando é só chamar!'
+      elif mensagem.lower() in ('n','não'):
+        return 'Gostaria de ir para o menu? Digite "Menu"!'
       else:
-        return 'Gostaria de voltar o menu? Digite "menu"!'
+        return 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o culttivo de alface. Gostaria de ir para o menu? Digite "Menu"!'
 
   
   #Responder
