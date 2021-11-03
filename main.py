@@ -119,7 +119,7 @@ class TelegramBot:
               if mensagem.lower() in ('s','sim'):
                 return 'Agradecemos seu contato, precisando é só chamar!'
               elif mensagem.lower() in ('n','nao'):
-                return 'Ótimo! \n\n' + msg_menu
+                return 'Ótimo! \n' + msg_menu
               else:
                 return 'Gostaria de voltar o menu? Digite "menu"!'
 
