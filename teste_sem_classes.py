@@ -8,8 +8,15 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           RegexHandler, ConversationHandler, CallbackQueryHandler)
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
-STATE1 = 1
-STATE2 = 2
+MENU_PRINCIPAL = 1
+MENU_2 = 2
+SIM = 4
+NAO = 5
+ALFACE, BETERRABA, CENOURA, TOMATE, BERINJELA, PRINCIPAL = range(6)
+
+MENU_ALFACE = 3
+ALFACE_1, ALFACE_2, ALFACE_3, ALFACE_4, ALFACE_5 = range(5)
+
 
 url_base = f'https://api.telegram.org/bot{TOKEN}/'#getUpdates?timeout=100'
 
@@ -53,157 +60,116 @@ f'{os.linesep * 2} A irrigação é fundamental nesta fase, pois o excesso de á
 'quando desenvolverem seis folhas definitivas, o que ocorre de 20 a 30 dias após a semeadura, conforme a temperatura ' \
 'do período e dos tratos culturais empregados.' 
 
-# iniciar o bot
-def iniciar():
-    print("press CTRL + C to cancel.")
-    update_id = None
-    while True:
-      atualizacao = obter_novas_mensagens(update_id)
-      mensagens = atualizacao["result"]      
-      if mensagens:
-        for mensagem in mensagens:
-          update_id = mensagem['update_id']          
-          #mensagem = str(mensagem["message"]["text"])
-          if 'message' in mensagem:
-            chat_id = mensagem['message']['from']['id']
-            primeira_mensagem = int (mensagem["message"]["message_id"]) == 1
-            resposta = criar_resposta(mensagem, primeira_mensagem)
-            responder(resposta,chat_id)
-            
-# obter as mensagens
-def obter_novas_mensagens(update_id):
-    link_requisicao = f'{url_base}getUpdates?timeout=100'
-    if update_id:
-      # recebe sempre a ultima mensagem
-      link_requisicao = f'{link_requisicao}&offset={update_id + 1}'
-    resultado = requests.get(link_requisicao)
-    return json.loads(resultado.content)
-
-# criar respostas
-def criar_resposta(mensagem, primeira_mensagem):      
-    mensagem = mensagem['message']['text']
-    qt_respostas = ('1', '2', '3', '4', '5')
-    
-    msg_menu = 'Digite o número da opção que deseja saber!'  \
-    f'{os.linesep * 2} 1 -  Quais são as cultivares de alface posso escolher?' \
-    f'{os.linesep * 2} 2 - Quais são os tipos de sistemas de cultivo para alface? ' \
-    f'{os.linesep * 2} 3 - Como devo fazer o preparo do solo para cultivar alface? ' \
-    f'{os.linesep * 2} 4 - Como devo fazer a adubação para a alface?'  \
-    f'{os.linesep * 2} 5 - Como devo fazer para obter mudas de alface?' \
-        
-    msg_boas_vindas = 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o cultivo de alface.' \
-    'Gostaria de ir para o menu? Digite "Menu"!'
-    
-    if primeira_mensagem or mensagem == '/start':
-        return msg_boas_vindas
-    elif mensagem.lower() =='menu':
-        return 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o culttivo de alface. \n' + msg_menu
-    else:
-        if mensagem in qt_respostas:
-          if mensagem == '1':
-            return primeira_resposta     
-          if mensagem == '2':
-            return segunda_resposta
-          if mensagem == '3':
-            return terceira_resposta
-          if mensagem == '4':
-            return quarta_resposta
-          if mensagem == '5':
-            return quinta_resposta
-        else:
-          if mensagem.lower() in ('s','sim'):
-            return 'Agradecemos seu contato, precisando é só chamar!'
-          elif mensagem.lower() in ('n','nao'):
-            return 'Ótimo! \n' + msg_menu
-          else:
-            return 'Não entemos sua solicitação. \nGostaria de voltar ao menu? Digite "menu"!'
-# responder
-def responder(resposta, chat_id):
-    # enviar
-    link_de_envio = f'{url_base}sendMessage?chat_id={chat_id}&text={resposta}'
-    requests.get(link_de_envio)
-
-def welcome(update, context):
-    message = 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre o cultivo de alface.' \
-    'Gostaria de ir para o menu? Digite "/menu"!'
+def start(update, context):
+    message = 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre cultivo. Digite /menu para mais opções.'
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-def feedback(update, context):
-    try:
-        message = 'Por favor, digite um feedback para o nosso tutorial:'
-        update.message.reply_text(message, reply_markup=ReplyKeyboardMarkup([], one_time_keyboard=True)) 
-        return STATE1
-    except Exception as e:
-        print(str(e))
-
-def inputFeedback(update, context):
-    feedback = update.message.text
-    print(feedback)
-    if len(feedback) < 10:
-        message = """Seu feedback foi muito curtinho... 
-                        \nInforma mais pra gente, por favor?"""
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-        return STATE1
-    else:
-        message = "Muito obrigada pelo seu feedback!"
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    
+def menu_principal(update, context):
+    question = 'Selecione qual deseja saber: '
+    
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Alface", callback_data=str(ALFACE)),
+          InlineKeyboardButton("Beterraba", callback_data=str(BETERRABA)),
+          InlineKeyboardButton("Cenora", callback_data=str(CENOURA))], 
+         # Segunda linha
+         [InlineKeyboardButton("Tomate", callback_data=str(TOMATE)),
+          InlineKeyboardButton("Berinjela", callback_data=str(BERINJELA))]])    
+    
+    if update.callback_query:
+        query = update.callback_query
+        query.answer()
         
-def inputFeedback2(update, context):
-    feedback = update.message.text
-    message = "Muito obrigada pelo seu feedback!"
-    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        query.edit_message_text(
+            text=question, reply_markup=keyboard
+        )        
+    else:
+        update.message.reply_text(question, reply_markup=keyboard)
+    
+    return MENU_PRINCIPAL    
 
-def cancel(update, context):
-    return ConversationHandler.END
-
-def menu_options(update, context):
+def menu_alface(update, context):
+    query = update.callback_query
+    query.answer()
+    
     question = 'Insira qual opção deseja saber!'  \
     f'{os.linesep * 2} 1 -  Quais são as cultivares de alface posso escolher?' \
     f'{os.linesep * 2} 2 - Quais são os tipos de sistemas de cultivo para alface? ' \
     f'{os.linesep * 2} 3 - Como devo fazer o preparo do solo para cultivar alface? ' \
     f'{os.linesep * 2} 4 - Como devo fazer a adubação para a alface?'  \
-    f'{os.linesep * 2} 5 - Como devo fazer para obter mudas de alface?' 
+    f'{os.linesep * 2} 5 - Como     devo fazer para obter mudas de alface?' 
     
     keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("1", callback_data='1'),
-          InlineKeyboardButton("2", callback_data='2'),
-          InlineKeyboardButton("3", callback_data='3'),
-          InlineKeyboardButton("4", callback_data='4'),
-          InlineKeyboardButton("5", callback_data='5')]])
-    update.message.reply_text(question, reply_markup=keyboard)
+        [[InlineKeyboardButton("1", callback_data=str(ALFACE_1)),
+          InlineKeyboardButton("2", callback_data=str(ALFACE_2)),
+          InlineKeyboardButton("3", callback_data=str(ALFACE_3)),
+          InlineKeyboardButton("4", callback_data=str(ALFACE_4)),
+          InlineKeyboardButton("5", callback_data=str(ALFACE_5))]])
+        
+    query.edit_message_text(
+        text=question, reply_markup=keyboard
+    )
+    
+    return MENU_ALFACE
 
-
-def get_option(update, context):
+def respostas_alface(update, context, resposta):
     query = update.callback_query
-    print(query.data)
+    query.answer()
+        
+    question = resposta
     
-    if query.data == '1':        
-        context.bot.send_message(chat_id=update.effective_chat.id, text=primeira_resposta)        
-    elif query.data == '2':
-        context.bot.send_message(chat_id=update.effective_chat.id, text=segunda_resposta)
-    elif query.data == '3':
-        context.bot.send_message(chat_id=update.effective_chat.id, text=terceira_resposta)
-    elif query.data == '4':
-        context.bot.send_message(chat_id=update.effective_chat.id, text=quarta_resposta)
-    elif query.data == '5':
-        context.bot.send_message(chat_id=update.effective_chat.id, text=quinta_resposta)           
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Continuar no menu de Alfaces", callback_data=str(ALFACE)),
+          InlineKeyboardButton("Voltar ao menu principal", callback_data=str(PRINCIPAL))]])
+        
+    query.edit_message_text(
+        text=question, reply_markup=keyboard
+    )
     
+    return MENU_PRINCIPAL
+
+def alface_resposta_1(update, context):
+    return respostas_alface(update, context, primeira_resposta)
+
+def alface_resposta_2(update, context):
+    return respostas_alface(update, context, segunda_resposta)
+
+def alface_resposta_3(update, context):
+    return respostas_alface(update, context, terceira_resposta)
+
+def alface_resposta_4(update, context):
+    return respostas_alface(update, context, quarta_resposta)
+
+def alface_resposta_5(update, context):
+    return respostas_alface(update, context, quinta_resposta)
+
+def cancel(update, context):
+    return ConversationHandler.END
+
 def main():
     try:
-        updater = Updater(token=TOKEN, use_context=True)    
-        updater.dispatcher.add_handler(CommandHandler('start', welcome))
-
+        updater = Updater(token=TOKEN, use_context=True)       
+        
+        updater.dispatcher.add_handler(CommandHandler('start', start))
+        
         conversation_handler = ConversationHandler(
-            entry_points=[CommandHandler('feedback', feedback)],
+            entry_points=[CommandHandler('menu', menu_principal)],
             states={
-                STATE1: [MessageHandler(Filters.text, inputFeedback)],
-                STATE2: [MessageHandler(Filters.text, inputFeedback2)]
+                MENU_PRINCIPAL: [
+                    CallbackQueryHandler(menu_alface, pattern='^' + str(ALFACE) + '$'),
+                    CallbackQueryHandler(menu_principal, pattern='^' + str(PRINCIPAL) + '$'),
+                ],                
+                MENU_ALFACE: [
+                    CallbackQueryHandler(alface_resposta_1, pattern='^' + str(ALFACE_1) + '$'),
+                    CallbackQueryHandler(alface_resposta_2, pattern='^' + str(ALFACE_2) + '$'),
+                    CallbackQueryHandler(alface_resposta_3, pattern='^' + str(ALFACE_3) + '$'),
+                    CallbackQueryHandler(alface_resposta_4, pattern='^' + str(ALFACE_4) + '$'),
+                    CallbackQueryHandler(alface_resposta_5, pattern='^' + str(ALFACE_5) + '$')
+                ]   
+                                            
             },
             fallbacks=[CommandHandler('cancel', cancel)])
         
-        updater.dispatcher.add_handler(conversation_handler)
-        updater.dispatcher.add_handler(CommandHandler('menu', menu_options))
-        updater.dispatcher.add_handler(CallbackQueryHandler(get_option))
+        updater.dispatcher.add_handler(conversation_handler)        
 
         print("Updater no ar1: " + str(updater))
         updater.start_polling()
