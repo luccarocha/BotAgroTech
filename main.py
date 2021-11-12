@@ -5,12 +5,9 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           RegexHandler, ConversationHandler, CallbackQueryHandler)
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 
-MENU_PRINCIPAL = 1
-MENU_ALFACE = 2
-ALFACE_1, ALFACE_2, ALFACE_3, ALFACE_4, ALFACE_5 = range(5)
-FOTOS = 5
-IMAGENS = 9
-FIM_FOTOS = 10
+
+ALFACE_1, ALFACE_2, ALFACE_3, ALFACE_4, ALFACE_5, FOTOS, FIM_FOTOS = range(7)
+MENU_PRINCIPAL, MENU_ALFACE, IMAGENS = range(3)
 ALFACE, PRINCIPAL = range(2)
 
 class TelegramBot():
