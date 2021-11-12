@@ -9,22 +9,21 @@ MENU_PRINCIPAL = 1
 MENU_ALFACE = 2
 ALFACE_1, ALFACE_2, ALFACE_3, ALFACE_4, ALFACE_5 = range(5)
 FOTOS = 5
-FOTO_1 = 6
-FOTO_2 = 7
-FOTO_3 = 8
 IMAGENS = 9
+FIM_FOTOS = 10
 ALFACE, PRINCIPAL = range(2)
 
 class TelegramBot():
     def __init__(self):
-        self.img_atual = 0
+        self.img_atual = None
+        self.image = None
 
     def start(self, update, context):
         message = 'Olá, Bem vindo ao BotAgroTech, aqui você vai encontar algumas informações sobre cultivo.'
         message += f'{os.linesep}Digite /menu para mais informações.'
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         
-    def menu_principal(self, update, context):    
+    def menu_principal(self, update, context):                    
         question = 'Selecione qual deseja saber: '
         
         keyboard = InlineKeyboardMarkup(
@@ -43,6 +42,10 @@ class TelegramBot():
         return MENU_PRINCIPAL    
 
     def menu_alface(self, update, context):
+        if self.image:
+            self.image.delete()
+            self.image = None
+            
         query = update.callback_query
         query.answer()
         
@@ -85,40 +88,72 @@ class TelegramBot():
         return MENU_PRINCIPAL
 
     def alface_resposta_1(self, update, context):
-        return respostas_alface(update, context, PRIMEIRA_RESPOSTA)
+        return self.respostas_alface(update, context, PRIMEIRA_RESPOSTA)
 
     def alface_resposta_2(self, update, context):
-        return respostas_alface(update, context, SEGUNDA_RESPOSTA)
+        return self.respostas_alface(update, context, SEGUNDA_RESPOSTA)
 
     def alface_resposta_3(self, update, context):
-        return respostas_alface(update, context, TERCEIRA_RESPOSTA)
+        return self.respostas_alface(update, context, TERCEIRA_RESPOSTA)
 
     def alface_resposta_4(self, update, context):
-        return respostas_alface(update, context, QUARTA_RESPOSTA)
+        return self.respostas_alface(update, context, QUARTA_RESPOSTA)
 
     def alface_resposta_5(self, update, context):
-        return respostas_alface(update, context, QUINTA_RESPOSTA)
+        return self.respostas_alface(update, context, QUINTA_RESPOSTA)
 
-    def manda_foto_1(self, update, context):
+    def manda_fotos(self, update, context):
+        if not self.image:
+            self.image = context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('imgs/1_imagem.png', 'rb'))
+            self.img_atual = 0
+            doença = 'Míldio em Mudas de Alface'            
+        elif self.img_atual == 0:
+            self.image.delete()
+            self.image = context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('imgs/2_imagem.png', 'rb'))
+            self.img_atual = 1
+            doença = 'Míldio em alface adulta'            
+        elif self.img_atual == 1:
+            self.image.delete()
+            self.image = context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('imgs/3_imagem.png', 'rb'))    
+            self.img_atual = 2
+            doença = 'Septoriose'            
+        elif self.img_atual == 2:
+            self.image.delete()
+            return IMAGENS
+        else:    
+            if self.image:
+                self.image.delete()           
+            
         query = update.callback_query
         query.answer()
         
         keyboard = InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Sim", callback_data=str(FOTO_2)), 
-            InlineKeyboardButton("Não", callback_data=str(FOTO_2))], 
-            [InlineKeyboardButton("Voltar ao Menu", callback_data=str(PRINCIPAL))]])
-
-        self.img_atual = context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('imgs/w.png', 'rb'))
+            [[InlineKeyboardButton("Sim", callback_data=str(FOTOS) if self.img_atual != 2 else str(FIM_FOTOS)), 
+            InlineKeyboardButton("Não", callback_data=str(FOTOS) if self.img_atual != 2 else str(FIM_FOTOS))], 
+            [InlineKeyboardButton("Voltar ao Menu", callback_data=str(ALFACE))]])
+        
         query.edit_message_text(
-            text="Seu alface se parece com isso?", reply_markup=keyboard
+            text=f"Seu alface se parece com isso? Pode ser {doença}", reply_markup=keyboard
         )
+        
         return IMAGENS
 
-    def manda_foto_2(self, update, context):
+    def fim_fotos(self, update, context):
+        self.image.delete()
+        self.image = None
+        
         query = update.callback_query
         query.answer()
-        print(self.img_atual)
-        self.img_atual.delete()
+        
+        keyboard = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Voltar ao Menu", callback_data=str(ALFACE))]])
+        
+        query.edit_message_text(
+            text=f"Desculpe, não possuimos mais imagens de possíveis doenças no nosso banco de dados.", reply_markup=keyboard
+        )
+        
+        return IMAGENS
+        
     def cancel(self, update, context):
         return ConversationHandler.END
 
@@ -141,10 +176,12 @@ class TelegramBot():
                         CallbackQueryHandler(self.alface_resposta_3, pattern='^' + str(ALFACE_3) + '$'),
                         CallbackQueryHandler(self.alface_resposta_4, pattern='^' + str(ALFACE_4) + '$'),
                         CallbackQueryHandler(self.alface_resposta_5, pattern='^' + str(ALFACE_5) + '$'),
-                        CallbackQueryHandler(self.manda_foto_1, pattern='^' + str(FOTOS) + '$'),
+                        CallbackQueryHandler(self.manda_fotos, pattern='^' + str(FOTOS) + '$'),
                     ],
                     IMAGENS: [
-                        CallbackQueryHandler(self.manda_foto_2, pattern='^' + str(FOTO_2) + '$'),
+                        CallbackQueryHandler(self.manda_fotos, pattern='^' + str(FOTOS) + '$'),
+                        CallbackQueryHandler(self.menu_alface, pattern='^' + str(ALFACE) + '$'),
+                        CallbackQueryHandler(self.fim_fotos, pattern='^' + str(FIM_FOTOS) + '$'),
                     ],    
                                                 
                 },
