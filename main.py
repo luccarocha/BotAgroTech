@@ -103,20 +103,24 @@ class TelegramBot():
         if not self.image:
             self.image = context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('imgs/1_imagem.png', 'rb'))
             self.img_atual = 0
-            doença = 'Míldio em Mudas de Alface'            
+            doença = 'Míldio em Mudas de Alface'        
+                
         elif self.img_atual == 0:
             self.image.delete()
             self.image = context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('imgs/2_imagem.png', 'rb'))
             self.img_atual = 1
-            doença = 'Míldio em alface adulta'            
+            doença = 'Míldio em alface adulta'     
+                   
         elif self.img_atual == 1:
             self.image.delete()
             self.image = context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('imgs/3_imagem.png', 'rb'))    
             self.img_atual = 2
             doença = 'Septoriose'            
+            
         elif self.img_atual == 2:
             self.image.delete()
             return IMAGENS
+        
         else:    
             if self.image:
                 self.image.delete()           
@@ -128,11 +132,11 @@ class TelegramBot():
             [[InlineKeyboardButton("Sim", callback_data=str(FOTOS) if self.img_atual != 2 else str(FIM_FOTOS)), 
             InlineKeyboardButton("Não", callback_data=str(FOTOS) if self.img_atual != 2 else str(FIM_FOTOS))], 
             [InlineKeyboardButton("Voltar ao Menu", callback_data=str(ALFACE))]])
-        
+
         query.edit_message_text(
             text=f"Seu alface se parece com isso? Pode ser {doença}", reply_markup=keyboard
         )
-        
+            
         return IMAGENS
 
     def fim_fotos(self, update, context):
